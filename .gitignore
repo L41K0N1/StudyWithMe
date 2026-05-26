@@ -38,5 +38,8 @@ build/
 ### Mac OS ###
 .DS_Store
 
-dependency-reduced-pom.xml
+# Exclude local deps
 localdependencies.txt
+
+# Exclude zip output
+dist.zip
