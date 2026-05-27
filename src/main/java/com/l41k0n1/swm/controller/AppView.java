@@ -57,12 +57,12 @@ public class AppView implements Initializable, IButtonHandler {
             updateBreakTimeDisplay(newVal.intValue());
         });
 
-
-        // ! has to be listening TimerStage insteadof isRunning. needs to be updated.
-        controller.getModel().isRunningProperty().addListener((obs, wasRunning, isNowRunning) -> {
+        // TimerState listener
+        controller.getModel().stateProperty().addListener((obs, oldState, newState) -> {
             updateButtons();
         });
 
+        // MusicManager listener
         controller.getMusicManager().isPlayingProperty().addListener((obs, isPlaying, wasPlaying) -> {
             updateMusicButtons();
         });

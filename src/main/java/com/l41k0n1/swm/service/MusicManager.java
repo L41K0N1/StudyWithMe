@@ -73,9 +73,11 @@ public class MusicManager implements IMusicService {
             isPlaying.set(false);
         });
 
-        mediaPlayer.setOnPlaying(() -> {
+
+        // debug
+/*        mediaPlayer.setOnPlaying(() -> {
             System.out.println("Stream is playing");
-        });
+        });*/
 
     }
 

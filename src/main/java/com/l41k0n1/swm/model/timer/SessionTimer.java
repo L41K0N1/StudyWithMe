@@ -2,20 +2,19 @@ package com.l41k0n1.swm.model.timer;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.util.Duration;
 
 public class SessionTimer implements ITimer {
 
     private Timeline timeline;
-    private TimerState state = TimerState.COMPLETED;
+    // private TimerState state = TimerState.COMPLETED;
 
     private final IntegerProperty workSecondsRemaining;
     private final IntegerProperty breakSecondsRemaining;
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
+
+    private final ObjectProperty<TimerState> stateProperty  = new SimpleObjectProperty<>(TimerState.COMPLETED);
 
     private final int workDuration;
     private final int breakDuration;
@@ -38,18 +37,18 @@ public class SessionTimer implements ITimer {
     @Override
     public void tick() {
         if (isRunning.get()) {
-            switch (state) {
+            switch (stateProperty.get()) {
                 case WORK -> {
                     workSecondsRemaining.set(workSecondsRemaining.get() - 1);
                     if (workSecondsRemaining.get() <= 0) {
-                        state = TimerState.BREAK;
+                        stateProperty.set(TimerState.BREAK);
                         breakSecondsRemaining.set(breakDuration);
                     }
                 }
                 case BREAK -> {
                     breakSecondsRemaining.set(breakSecondsRemaining.get() - 1);
                     if (breakSecondsRemaining.get() <= 0) {
-                        state = TimerState.WORK;
+                        stateProperty.set(TimerState.WORK);
                         workSecondsRemaining.set(workDuration);
                     }
                 }
@@ -59,16 +58,16 @@ public class SessionTimer implements ITimer {
 
     @Override
     public void start() {
-        if (state == TimerState.COMPLETED) {
-            state = TimerState.WORK;
+        if (stateProperty.get() == TimerState.COMPLETED) {
+            stateProperty.set(TimerState.WORK);
             timeline.play();
             isRunning.set(true);
         }
     }
 
-    public void pause() {
-        if (state == TimerState.WORK || state == TimerState.BREAK) {
-            state = TimerState.PAUSE;
+    public void pause() {;
+        if (stateProperty.get() == TimerState.WORK || stateProperty.get() == TimerState.BREAK) {
+            stateProperty.set(TimerState.PAUSE);
             timeline.pause();
             isRunning.set(false);
         }
@@ -76,8 +75,8 @@ public class SessionTimer implements ITimer {
 
     @Override
     public void resume() {
-        if (state == TimerState.PAUSE) {
-            state = TimerState.WORK;
+        if (stateProperty.get() == TimerState.PAUSE) {
+            stateProperty.set(TimerState.WORK);
             timeline.play();
             isRunning.set(true);
         }
@@ -86,10 +85,11 @@ public class SessionTimer implements ITimer {
 
     @Override
     public void stopAndReset() {
-        if (state != TimerState.COMPLETED) {
-            state = TimerState.COMPLETED;
+        if (stateProperty.get() != TimerState.COMPLETED) {
+            stateProperty.set(TimerState.COMPLETED);
             workSecondsRemaining.set(workDuration);
-            timeline.stop();
+            breakSecondsRemaining.set(breakDuration);
+            timeline.pause();
             isRunning.set(false);
         }
     }
@@ -114,7 +114,15 @@ public class SessionTimer implements ITimer {
         return isRunning;
     }
 
-    public TimerState getState() {
+/*    public TimerState getState() {
         return state;
+    }*/
+
+    public TimerState getState() {
+        return stateProperty.get();
+    }
+
+    public ObjectProperty<TimerState> stateProperty() {
+        return stateProperty;
     }
 }
