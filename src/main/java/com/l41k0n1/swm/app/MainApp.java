@@ -11,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -21,25 +22,31 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        // Initializing Controller
         AppController controller = getController();
-        // Initializing UserView
         AppView view = new AppView(controller);
 
         Platform.setImplicitExit(true);
 
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/view/timer_iteration_3.fxml")));
-
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(
+                getClass().getResource("/view/timer_iteration_3.fxml")));
         loader.setController(view);
-
         Parent root = loader.load();
 
-        stage.getIcons().add(
-                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/appicon.png")))
+        Scene scene = new Scene(root);
+
+        Font font = Font.loadFont(getClass().getResource("/fonts/Unbounded-Black.ttf").toExternalForm(), 20);
+
+        scene.getStylesheets().add(
+                getClass().getResource("/themes/fonts.css").toExternalForm()
         );
 
-        stage.setScene(new Scene(root));
+        stage.getIcons().add(
+                new Image(Objects.requireNonNull(
+                        getClass().getResourceAsStream("/appicon.png")))
+        );
         stage.setTitle("Study With Me");
+
+        stage.setScene(scene);
         stage.show();
     }
 
@@ -59,6 +66,10 @@ public class MainApp extends Application {
 
         // Initializing UserInputController
         return new AppController(timer, session);
+    }
+
+    private static void loadModules() {
+
     }
 
     @Override
